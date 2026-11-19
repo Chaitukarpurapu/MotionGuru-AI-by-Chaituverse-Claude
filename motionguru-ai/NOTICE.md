@@ -8,3 +8,4 @@
 - Brand logos in `engine/assets/logos.json` come from Simple Icons (CC0); the logos are trademarks of their owners.
 - `assets/avatar.png` and `assets/banner.png` are made from Chaituverse's own photo. Replace them with yours if you fork this.
 - Everything in `motionguru/` is new code under the MIT licence in `LICENSE`.
+- `engine/ENGINE_GUIDE.md` is the upstream `SKILL.md`, renamed (frontmatter removed) so the repo contains exactly one skill.
