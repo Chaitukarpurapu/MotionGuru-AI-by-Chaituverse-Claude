@@ -1,0 +1,29 @@
+{
+ "name": "Neon Launch",
+ "desc": "Tech-launch energy: moody grade, glowing neon captions, glitch hits on key words, stat card on numbers.",
+ "captions": {
+  "style": "neon",
+  "y": 0.7
+ },
+ "grade": "moody",
+ "vignette": true,
+ "grain": 5,
+ "hook": {
+  "fx": "title",
+  "dur": 1.8,
+  "glitch": true
+ },
+ "emphasis": {
+  "fx": [
+   "glitch",
+   "punch"
+  ],
+  "gap": 4.0,
+  "max": 8,
+  "amp": 0.12
+ },
+ "lower_third": false,
+ "watermark": true,
+ "stat_on_numbers": true,
+ "engine": false
+}

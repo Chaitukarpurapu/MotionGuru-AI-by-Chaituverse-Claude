@@ -71,7 +71,7 @@ def render(src, dst, plan, hw='auto', width=1080, words_file=None, lang=None, ap
     scale = f"[vcut]scale={W}:{H}:flags=bicubic,setsar=1[vsc]"
     body, extra = g.build('[vsc]', first_extra=1, sub=sub)
     n_in = 1 + len(extra) // 8                         # each PNG input uses 8 args
-    ev = (S.events_for([f for f in fx if f['fx'] in MOTION_FX or f['fx'] == 'hook']) + list(plan.get('_extra_sfx', []))) if plan.get('sfx', True) else []
+    ev = (S.events_for([f for f in fx if f['fx'] in MOTION_FX or f['fx'] == 'hook']) + list(plan.get('_extra_sfx', [])) + [tuple(e) for e in plan.get('sfx_events', [])]) if plan.get('sfx', True) else []
     cmd = ['ffmpeg', '-v', 'error', '-y', '-i', src] + extra
     sfx_in = None
     if ev:

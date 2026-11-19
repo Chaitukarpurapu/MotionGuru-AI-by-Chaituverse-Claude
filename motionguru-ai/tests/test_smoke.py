@@ -65,3 +65,15 @@ def test_engine_effect_in_same_plan(clip, tmp_path):
     plan = dict(sfx=True, effects=[dict(fx='backdrop-word', start=0.5, end=2.0, text='HI'), dict(fx='punch', start=2.5, end=3.0)])
     out = str(tmp_path / 'e.mp4'); R.render(v, out, plan, 'cpu', 270, wj, None, None)
     assert probe(out)['dur'] > 5
+
+
+def test_styles_place_effects_sensibly():
+    from motionguru import styles as ST
+    words = [dict(w=x, s=i * 0.6, e=i * 0.6 + 0.4) for i, x in enumerate('hey this AI tool edits videos in 10 minutes and it is free for everyone today really'.split())]
+    for name in ST.list_styles():
+        p = ST.build_plan(name, words, 9.0, ['AI', 'free', 'videos'], engine=False)
+        timed = [e for e in p['effects'] if 'start' in e]
+        assert timed and all(0 <= e['start'] < e['end'] <= 9.0 + 1e-6 for e in timed), name
+        emph = sorted(e['start'] for e in timed if e['fx'] in ('punch', 'shake'))
+        assert all(b - a >= 3.0 for a, b in zip(emph, emph[1:])), name
+        assert not any(e['fx'] in ('backdrop-word', 'spotlight') for e in p['effects']), name   # engine=False must not use the engine

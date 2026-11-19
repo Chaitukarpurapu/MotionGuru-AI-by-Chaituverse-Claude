@@ -1,0 +1,27 @@
+{
+ "name": "Cinematic",
+ "desc": "Film look: curves, vignette, grain, slow gentle push-ins, soft captions and a sub-drop on the hook.",
+ "captions": {
+  "style": "minimal",
+  "y": 0.74
+ },
+ "grade": "cinematic",
+ "vignette": true,
+ "grain": 7,
+ "hook": {
+  "fx": "title",
+  "dur": 2.2,
+  "sfx": "sub_drop"
+ },
+ "emphasis": {
+  "fx": [
+   "punch"
+  ],
+  "gap": 6.0,
+  "max": 5,
+  "amp": 0.07
+ },
+ "lower_third": true,
+ "watermark": false,
+ "engine": false
+}

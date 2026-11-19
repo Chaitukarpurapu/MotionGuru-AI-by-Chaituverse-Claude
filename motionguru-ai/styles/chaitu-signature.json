@@ -1,0 +1,27 @@
+{
+ "name": "Chaitu Signature",
+ "desc": "The Chaituverse look: a giant word behind your head on the hook, spotlight on the biggest idea, pill captions, your face lower third. Needs the engine.",
+ "captions": {
+  "style": "pill",
+  "y": 0.72
+ },
+ "grade": "cinematic",
+ "vignette": true,
+ "grain": 4,
+ "hook": {
+  "fx": "backdrop-word",
+  "dur": 2.0
+ },
+ "emphasis": {
+  "fx": [
+   "punch"
+  ],
+  "gap": 5.0,
+  "max": 6,
+  "amp": 0.12,
+  "spotlight_once": true
+ },
+ "lower_third": true,
+ "watermark": true,
+ "engine": true
+}

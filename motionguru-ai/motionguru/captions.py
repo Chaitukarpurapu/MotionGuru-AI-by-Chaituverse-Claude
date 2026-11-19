@@ -12,9 +12,9 @@ SCRIPT_FONTS = [  # (unicode range, font family to look for)
 
 STYLES = {  # font, size (fraction of height), per-chunk words, upper-case, outline, active colour, shape
     'hormozi':  dict(font='Anton', size=0.058, words=2, upper=True, outline=0.006, pop=118),
-    'karaoke':  dict(font='Poppins', bold=1, size=0.036, words=5, upper=False, outline=0.004, pop=108),
-    'pill':     dict(font='Poppins', bold=1, size=0.038, words=4, upper=False, outline=0.0, pop=100, pill=True),
-    'minimal':  dict(font='Poppins', bold=1, size=0.032, words=6, upper=False, outline=0.003, pop=100, static=True),
+    'karaoke':  dict(font='Poppins', bold=1, size=0.040, words=5, upper=False, outline=0.004, pop=108),
+    'pill':     dict(font='Poppins', bold=1, size=0.044, words=4, upper=False, outline=0.0, pop=100, pill=True),
+    'minimal':  dict(font='Poppins', bold=1, size=0.036, words=6, upper=False, outline=0.003, pop=100, static=True),
     'neon':     dict(font='Archivo Black', size=0.05, words=2, upper=True, outline=0.0, pop=112, glow=True),
 }
 
@@ -69,10 +69,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
     ev = []
     pos = f'\\an5\\pos({W // 2},{int(H * y)})'
-    for ch in chunk(words, st['words']):
+    chunks = chunk(words, st['words'])
+    for ci, ch in enumerate(chunks):
+        nxt = chunks[ci + 1][0]['s'] if ci + 1 < len(chunks) else 1e9
         for i, w in enumerate(ch):
-            a = w['s']; e = ch[i + 1]['s'] if i + 1 < len(ch) else max(w['e'], w['s'] + 0.25) + 0.08
-            if st.get('static'): a, e = ch[0]['s'], ch[-1]['e'] + 0.12
+            a = w['s']; e = ch[i + 1]['s'] if i + 1 < len(ch) else min(nxt - 0.02, max(w['e'], w['s'] + 0.25) + 0.35)
+            if st.get('static'): a, e = ch[0]['s'], min(nxt - 0.02, ch[-1]['e'] + 0.35)
             if st.get('static') and i: continue
             parts = []
             for j, x in enumerate(ch):

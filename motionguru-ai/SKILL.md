@@ -22,6 +22,9 @@ Cuts shift every later timestamp. If they gave times for the ORIGINAL video, put
 ## 2. Words
 Captions and word-timed effects need `<video>.words.json` (made automatically by faster-whisper). Read it and fix misheard names and numbers by hand, keeping one entry per word. Telugu or Hindi: set `--lang te` / `--lang hi` and `WHISPER_MODEL=medium` (or `large-v3`). Indic captions need a Noto Sans font for that script installed or in `fonts/`.
 
+## 2b. Styles (fastest path)
+If the user names a look ("edit this in hormozi", "cinematic", "make it clean"), or just says "full edit", use a style: after the cut approval, run `python -m motionguru style apply <video> --style <name> --approve <ids|safe> --keywords "a|b|c"`. Pick keywords from the transcript (numbers, the main claim, names), not filler. Styles: `clean`, `hormozi`, `cinematic`, `neon`, `chaitu-signature` (`style list` shows them). Add `--plan-only` to review or hand-edit the plan before rendering. Use `--hook "TEXT"` for the opening word. `--no-engine` skips the behind-the-head effects.
+
 ## 3. Plan, check, render
 Write `<video>_plan.json` (see `plans/example.plan.json`). Times are seconds on the FINAL (post-cut) timeline.
 ```json

@@ -3,7 +3,7 @@
 # MotionGuru AI
 **by Chaituverse.** Drop a talking-head video into Claude Code (or run the CLI) and get an edit that asks before it cuts, with pro captions, motion graphics, your face on the lower third, and layered sound design, rendered in one pass.
 
-Built on the open-source [claude-reel-effects](https://github.com/adamgodigital/claude-reel-effects) engine (kept in `engine/`, MIT). See [ANALYSIS.md](ANALYSIS.md) for what we changed and why.
+MotionGuru builds on the open-source [claude-reel-effects](https://github.com/adamgodigital/claude-reel-effects) engine by Adam Digital (kept unmodified in `engine/`, MIT), which is based on claude-video-effects by Vibha Ramprakash. See [ANALYSIS.md](ANALYSIS.md) for what we changed and why.
 
 ## What's new vs the original
 | | |
@@ -14,6 +14,23 @@ Built on the open-source [claude-reel-effects](https://github.com/adamgodigital/
 | **Sound design** | 11 synthesised SFX, auto-placed (riser before the hit), premium-pack slot, -14 LUFS, music ducking. |
 | **One pass** | cuts, effects, captions, audio in a single ffmpeg graph: one encode, GPU when available. |
 | **55 face-tracking effects, in the same plan** | `backdrop-word`, `spotlight`, `orbit`, `logo-link`, `card-drop` and the rest put things *behind your head*. Write them in the plan next to `punch`, captions and sound: `plans/signature.plan.json`. Needs `opencv-python` + `mediapipe`. |
+
+## Styles
+One command applies a whole look and places the effects on your words (hook first, emphasis only on keywords, never more than one big effect every few seconds).
+```bash
+python -m motionguru style list
+python -m motionguru style apply reel.mp4 --style hormozi --approve safe --keywords "AI|free|10"
+python -m motionguru style apply reel.mp4 --style chaitu-signature --hook "CHAITU" --plan-only   # just write the plan, edit it, then render with `edit`
+```
+| style | look |
+|---|---|
+| `clean` | bright, minimal captions, subtle punch-ins, your face lower third |
+| `hormozi` | huge one/two-word captions, punch + shake, flash on the hook |
+| `cinematic` | curves, vignette, grain, soft captions, sub-drop on the hook |
+| `neon` | moody grade, glowing captions, glitch hits, stat cards on numbers |
+| `chaitu-signature` | giant word behind your head, spotlight, pill captions (needs the engine) |
+
+Add your own: copy a file in `styles/` and edit it.
 
 ## Install
 ```bash
@@ -45,6 +62,11 @@ Put licensed `.wav/.mp3` in `sfx_pack/` named by role (`whoosh_01.wav`, `riser_0
 
 ## Test
 `pip install pytest && pytest` (needs ffmpeg). CI is in `.github/workflows/ci.yml`.
+
+## Credits
+- **Effects engine** (`engine/`): [claude-reel-effects](https://github.com/adamgodigital/claude-reel-effects) by Adam Digital, based on claude-video-effects by Vibha Ramprakash. All 55 effects and the original captions, pause trimming and sound effects come from there.
+- **MotionGuru additions** by Chaituverse: approval-based cut review, filler and retake detection, ASS caption styles, camera/overlay motion graphics, face brand kit, sound design and mixing, one-pass renderer, styles system.
+- Face tracking: OpenCV YuNet (MIT). Person cut-out: MediaPipe Selfie Segmenter (Apache 2.0). Word timing: faster-whisper (MIT). Logos: Simple Icons (CC0), trademarks of their owners. Fonts: see `engine/fonts/`.
 
 ## Licence
 MIT. Original copyright notices for Vibha Ramprakash and Adam Digital are preserved in `LICENSE`, `NOTICE.md` and `engine/`. Brand logos are trademarks of their owners.

@@ -1,6 +1,6 @@
 """motionguru: cuts propose|apply | captions | edit | sfx-list | brand | engine"""
 import argparse, json, os, subprocess, sys
-from . import __version__, brand as B, cuts as C, captions as CAP, render as R, transcribe as T, sfx_pro as S
+from . import __version__, styles as ST, brand as B, cuts as C, captions as CAP, render as R, transcribe as T, sfx_pro as S
 from .util import probe, ROOT, need, fmt
 
 
@@ -40,6 +40,22 @@ def cmd_captions(a):
     R.render(a.video, dst, plan, a.hw, a.width, a.words, a.lang); print('Done:', dst)
 
 
+def cmd_style(a):
+    if a.action == 'list':
+        for k, v in ST.list_styles().items(): print(f"{k:18s} {v['desc']}")
+        return
+    need('ffmpeg'); info = probe(a.video); ap = C.parse_approve(a.approve) if a.approve else None
+    words = T.get_words(a.video, a.lang, a.words)
+    kept = C.kept_segments(info['dur'], json.load(open(os.path.splitext(a.video)[0] + '.cuts.json'))['candidates'], ap) if ap is not None else [(0.0, info['dur'])]
+    words2 = T.remap(words, kept) if ap is not None else words; dur = sum(e - s for s, e in kept)
+    plan = ST.build_plan(a.style, words2, dur, a.keywords.split('|') if a.keywords else None, engine=not a.no_engine, brand_text=a.hook)
+    pp = os.path.splitext(a.video)[0] + f'_{a.style}.plan.json'; json.dump(plan, open(pp, 'w'), indent=1, ensure_ascii=False)
+    print(f"Plan: {pp}  ({len(plan['effects'])} effects, captions {plan['captions']['style'] if plan['captions'] else 'off'})")
+    if a.plan_only: return
+    dst = a.out or os.path.splitext(a.video)[0] + f'_{a.style}.mp4'
+    R.render(a.video, dst, plan, a.hw, a.width, a.words, a.lang, ap, a.still); print('Done:', dst)
+
+
 def cmd_brand(a):
     b = B.save(name=a.name, handle=a.handle, accent=a.accent, avatar=a.avatar)
     print(json.dumps({k: v for k, v in b.items() if k != 'avatar_path'}, indent=1))
@@ -67,10 +83,14 @@ def main(argv=None):
     e.add_argument('--approve', help='apply approved cuts first (ids | all | safe)'); e.add_argument('--still', type=float, help='save one check frame at this second'); e.set_defaults(f=cmd_edit)
     k = sp.add_parser('captions', help='captions only'); k.add_argument('video'); k.add_argument('--style', default='hormozi', choices=list(CAP.STYLES))
     k.add_argument('--keywords'); k.add_argument('--y', type=float, default=0.70); k.set_defaults(f=cmd_captions)
+    y = sp.add_parser('style', help='list styles / apply one to a video'); y.add_argument('action', choices=['list', 'apply']); y.add_argument('video', nargs='?')
+    y.add_argument('--style', default='clean'); y.add_argument('--keywords', help='words to emphasise: a|b|c (default: picked automatically)'); y.add_argument('--hook', help='text for the opening hook')
+    y.add_argument('--approve'); y.add_argument('--no-engine', action='store_true'); y.add_argument('--plan-only', action='store_true'); y.add_argument('--still', type=float)
+    y.add_argument('--width', type=int, default=1080); y.set_defaults(f=cmd_style)
     b = sp.add_parser('brand', help='set your name, handle, colour and face avatar'); b.add_argument('--name'); b.add_argument('--handle'); b.add_argument('--accent'); b.add_argument('--avatar'); b.set_defaults(f=cmd_brand)
     s = sp.add_parser('sfx', help='list sound effects'); s.set_defaults(f=cmd_sfx)
     g = sp.add_parser('engine', help='55 face-tracking effects (upstream engine)'); g.add_argument('rest', nargs=argparse.REMAINDER); g.set_defaults(f=cmd_engine)
-    for x in (c, e, k):
+    for x in (c, e, k, y):
         x.add_argument('--out'); x.add_argument('--words'); x.add_argument('--lang', help='en, hi, te, ta ...'); x.add_argument('--hw', default='auto', choices=['auto', 'cpu', 'nvenc', 'videotoolbox'])
     for x in (e, k): x.add_argument('--width', type=int, default=1080, help='short side: 1080 (default) or 2160')
     a = p.parse_args(argv); a.f(a)

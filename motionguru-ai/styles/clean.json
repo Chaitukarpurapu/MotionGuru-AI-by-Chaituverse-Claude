@@ -1,0 +1,26 @@
+{
+ "name": "Clean",
+ "desc": "Bright, minimal creator look: light warm grade, small clean captions, subtle punch-ins, your face lower third.",
+ "captions": {
+  "style": "minimal",
+  "y": 0.7
+ },
+ "grade": "warm",
+ "vignette": false,
+ "grain": 0,
+ "hook": {
+  "fx": "title",
+  "dur": 1.6
+ },
+ "emphasis": {
+  "fx": [
+   "punch"
+  ],
+  "gap": 5.0,
+  "max": 6,
+  "amp": 0.1
+ },
+ "lower_third": true,
+ "watermark": false,
+ "engine": false
+}

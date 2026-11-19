@@ -1,0 +1,28 @@
+{
+ "name": "Hormozi Bold",
+ "desc": "High-retention business style: huge one/two-word captions with accent pop, punch and shake on key words, flash on the hook.",
+ "captions": {
+  "style": "hormozi",
+  "y": 0.68
+ },
+ "grade": "pop",
+ "vignette": false,
+ "grain": 0,
+ "hook": {
+  "fx": "title",
+  "dur": 1.8,
+  "flash": true
+ },
+ "emphasis": {
+  "fx": [
+   "punch",
+   "shake"
+  ],
+  "gap": 3.5,
+  "max": 10,
+  "amp": 0.16
+ },
+ "lower_third": false,
+ "watermark": true,
+ "engine": false
+}
