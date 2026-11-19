@@ -1,0 +1,20 @@
+{
+  "lang": "en",
+  "captions": {"style": "hormozi", "keywords": "edit|videos|AI", "y": 0.70},
+  "music": null,
+  "sfx": true,
+  "sfx_db": -3,
+  "effects": [
+    {"fx": "grade", "name": "cinematic"},
+    {"fx": "vignette"},
+    {"fx": "grain", "amount": 6},
+    {"fx": "watermark", "start": 0.5, "end": 99},
+    {"fx": "lower_third", "start": 0.4, "end": 3.4},
+    {"fx": "punch", "start": 4.0, "end": 4.6, "amp": 0.18},
+    {"fx": "title", "start": 5.0, "end": 7.0, "text": "10 minutes"},
+    {"fx": "glitch", "start": 7.5, "end": 7.8},
+    {"fx": "stat", "start": 9.0, "end": 11.5, "value": "10X", "label": "faster edits"},
+    {"fx": "shake", "start": 12.0, "end": 12.6},
+    {"fx": "flash", "start": 13.0, "end": 13.2}
+  ]
+}

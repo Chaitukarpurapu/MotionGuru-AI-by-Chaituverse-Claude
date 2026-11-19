@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+brand.local.json
+*.words.json
+*.cuts.json
+*.review.html
+*_cut.mp4
+*_motionguru.mp4
+*.graph.txt
+sfx_pack/*
+!sfx_pack/README.md

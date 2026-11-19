@@ -1,0 +1,11 @@
+{
+ "name": "Chaituverse",
+ "handle": "@chaituverse",
+ "tagline": "MotionGuru AI",
+ "avatar": "assets/avatar.png",
+ "accent": "#FFD400",
+ "accent2": "#7C5CFF",
+ "text": "#FFFFFF",
+ "font_head": "Anton",
+ "font_body": "Poppins"
+}
