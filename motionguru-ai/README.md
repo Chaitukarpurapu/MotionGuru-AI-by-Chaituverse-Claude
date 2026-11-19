@@ -13,7 +13,7 @@ Built on the open-source [claude-reel-effects](https://github.com/adamgodigital/
 | **Motion graphics** | `punch`, `shake`, `flash`, `glitch`, spring-pop `title`, `lower_third` and `watermark` with your face, `stat` cards, cinematic grades, vignette, grain. |
 | **Sound design** | 11 synthesised SFX, auto-placed (riser before the hit), premium-pack slot, -14 LUFS, music ducking. |
 | **One pass** | cuts, effects, captions, audio in a single ffmpeg graph: one encode, GPU when available. |
-| **55 face-tracking effects** | still there: `motionguru engine orbit in.mp4 out.mp4 ...` |
+| **55 face-tracking effects, in the same plan** | `backdrop-word`, `spotlight`, `orbit`, `logo-link`, `card-drop` and the rest put things *behind your head*. Write them in the plan next to `punch`, captions and sound: `plans/signature.plan.json`. Needs `opencv-python` + `mediapipe`. |
 
 ## Install
 ```bash
@@ -32,7 +32,7 @@ python -m motionguru edit reel.mp4 --plan my.plan.json --approve safe --still 5.
 python -m motionguru brand --name "Chaitu" --handle "@yourhandle" --accent "#FFD400"
 python -m motionguru engine spotlight reel.mp4 out.mp4 --text "FREE"                      # face-tracking pass
 ```
-Effect times in a plan are on the **final (post-cut)** timeline.
+Effect times in a plan are on the **final (post-cut)** timeline. Engine effects run as one extra pass (one more encode); `--still` with engine effects renders the whole clip, so it is slower.
 
 ## Your face
 `assets/avatar.png` is cropped from your photo and shows in `lower_third` and `watermark`. Swap it with `brand --avatar path.png`.

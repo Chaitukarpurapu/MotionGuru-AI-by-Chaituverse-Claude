@@ -1,0 +1,11 @@
+{
+  "lang": "en",
+  "sfx": true,
+  "effects": [
+    {"fx": "grade", "name": "cinematic"},
+    {"fx": "backdrop-word", "start": 0.3, "end": 2.0, "text": "CHAITU", "font": "bold"},
+    {"fx": "spotlight", "start": 2.0, "end": 4.0, "text": "FREE"},
+    {"fx": "lower_third", "start": 0.4, "end": 3.6},
+    {"fx": "punch", "start": 2.0, "end": 2.5}
+  ]
+}

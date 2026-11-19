@@ -56,3 +56,12 @@ def test_full_edit_renders(clip, tmp_path):
 
 def test_every_synth_sound_is_audible():
     for n in S.SYNTH: assert np.abs(S.sound(n)).max() > 0.1, n
+
+
+def test_engine_effect_in_same_plan(clip, tmp_path):
+    """Needs opencv + mediapipe (optional extras). Uses the person cut-out, so skip when they are missing."""
+    pytest.importorskip('mediapipe'); pytest.importorskip('cv2')
+    v, wj = clip
+    plan = dict(sfx=True, effects=[dict(fx='backdrop-word', start=0.5, end=2.0, text='HI'), dict(fx='punch', start=2.5, end=3.0)])
+    out = str(tmp_path / 'e.mp4'); R.render(v, out, plan, 'cpu', 270, wj, None, None)
+    assert probe(out)['dur'] > 5

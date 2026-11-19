@@ -1,12 +1,49 @@
 """One-pass renderer: approved cuts -> camera fx -> overlays -> captions -> sound design -> loudness, a single encode."""
-import json, os, subprocess, tempfile
+import json, os, subprocess, sys, tempfile
 from . import cuts as C, captions as CAP, motion as M, sfx_pro as S, transcribe as T
-from .util import probe, encoder_args, run
+from . import brand as B
+from .util import probe, encoder_args, run, ROOT
 
 MOTION_FX = {'punch', 'shake', 'flash', 'glitch', 'grade', 'vignette', 'grain', 'title', 'lower_third', 'stat', 'watermark'}
 
 
-def render(src, dst, plan, hw='auto', width=1080, words_file=None, lang=None, approve=None, still=None):
+ENGINE = os.path.join(ROOT, 'engine', 'scripts')
+
+
+def _engine_events(fx):
+    """Sound events for engine effects, taken from the engine's own table so they land the way the author tuned them."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('engine_sfx', os.path.join(ENGINE, 'sfx.py')); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    ev = []
+    for f in fx:
+        o = {k: v for k, v in f.items() if k not in ('fx', 'start', 'end')}
+        ev += m.events(f['fx'], float(f['start']), float(f.get('end', f['start'] + 1)), o)
+    return ev
+
+
+def render_with_engine(src, dst, plan, eng_fx, hw, width, words_file, lang, approve, still):
+    """cuts -> engine pass (face tracking, things behind your head) -> our graphics/captions/sound. Engine adds one extra encode."""
+    info = probe(src); tmp = tempfile.mkdtemp(prefix='mguru_eng_'); b = B.load()
+    cur, kept = src, [(0.0, info['dur'])]
+    if approve is not None:
+        cands = json.load(open(os.path.splitext(src)[0] + '.cuts.json'))['candidates']
+        cur = os.path.join(tmp, 'cut.mp4'); kept, _, _ = C.apply(src, cur, cands, approve, hw)
+    wf = None
+    if plan.get('captions'):
+        w = T.remap(T.get_words(src, lang or plan.get('lang'), words_file), kept) if approve is not None else T.get_words(src, lang or plan.get('lang'), words_file)
+        wf = os.path.join(tmp, 'cut.words.json'); json.dump(w, open(wf, 'w'), ensure_ascii=False)
+    json.dump(dict(name=b['name'], handle=b['handle']), open(os.path.join(ROOT, 'engine', 'profile.json'), 'w'))
+    pj = os.path.join(tmp, 'engine_plan.json'); json.dump(dict(effects=eng_fx, sfx=False), open(pj, 'w'))
+    eng = os.path.join(tmp, 'engine.mp4')
+    run([sys.executable, os.path.join(ENGINE, 'fx.py'), '--plan', pj, cur, eng, '--no-sfx', '--width', str(width)])
+    rest = dict(plan); rest['effects'] = [f for f in plan['effects'] if f not in eng_fx]; rest['_extra_sfx'] = _engine_events(eng_fx)
+    return render(eng, dst, rest, hw, width, wf, lang, None, still, _engine_done=True)
+
+
+def render(src, dst, plan, hw='auto', width=1080, words_file=None, lang=None, approve=None, still=None, _engine_done=False):
+    eng_fx = [f for f in plan.get('effects', []) if f['fx'] not in MOTION_FX and f['fx'] != 'captions']
+    if eng_fx and not _engine_done:
+        return render_with_engine(src, dst, plan, eng_fx, hw, width, words_file, lang, approve, still)
     info = probe(src); out_dir = os.path.dirname(os.path.abspath(dst))
     cands = None; cp = os.path.splitext(src)[0] + '.cuts.json'
     kept = [(0.0, info['dur'])]
@@ -34,7 +71,7 @@ def render(src, dst, plan, hw='auto', width=1080, words_file=None, lang=None, ap
     scale = f"[vcut]scale={W}:{H}:flags=bicubic,setsar=1[vsc]"
     body, extra = g.build('[vsc]', first_extra=1, sub=sub)
     n_in = 1 + len(extra) // 8                         # each PNG input uses 8 args
-    ev = S.events_for([f for f in fx if f['fx'] in MOTION_FX or f['fx'] == 'hook']) if plan.get('sfx', True) else []
+    ev = (S.events_for([f for f in fx if f['fx'] in MOTION_FX or f['fx'] == 'hook']) + list(plan.get('_extra_sfx', []))) if plan.get('sfx', True) else []
     cmd = ['ffmpeg', '-v', 'error', '-y', '-i', src] + extra
     sfx_in = None
     if ev:

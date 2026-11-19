@@ -37,7 +37,7 @@ Camera and colour: `punch` (amp), `shake`, `flash`, `glitch`, `grade` (cinematic
 Overlays: `title` (text, color), `lower_third` (name, handle: shows the creator's face), `stat` (value, label), `watermark` (face bug).
 Caption styles: `hormozi` (big, one to two words, accent pop), `karaoke` (phrase, active word lit), `pill` (highlight pill on the active word), `minimal`, `neon`.
 Sound is automatic: riser before a hook, whoosh on titles, impact on punch/shake, glitch on glitch, shutter on flash. `"sfx": false` on any effect mutes it. Final mix is normalised to -14 LUFS; `music` ducks under the voice.
-Face-tracking effects that put things behind the head (orbit, spotlight, logo-link, card-drop, 50 more): `python -m motionguru engine <effect> in.mp4 out.mp4 ...` (see `engine/SKILL.md`). Run these as a separate final pass.
+Face-tracking effects that put things behind the head (backdrop-word, spotlight, orbit, logo-link, card-drop, 50 more, listed in `engine/SKILL.md` with their options) go in the SAME plan, e.g. `{"fx":"backdrop-word","start":0.3,"end":2,"text":"FREE"}`. MotionGuru runs cuts, then the engine, then its own graphics, captions and sound. Needs `pip install opencv-python mediapipe`. See `plans/signature.plan.json`. Do not stack an engine effect and a lower-third over the same spot.
 
 ## Pacing rules
 One effect every 3 to 6 seconds, 0.4 to 2.5 s each. Never stack two big things. Hook in the first 2 s gets a riser + `title` or `punch`. Use numbers the user actually said. Premium SFX the user owns go in `sfx_pack/`.
